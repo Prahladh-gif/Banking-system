@@ -1,104 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Bank Management System</title>
+    <title>Bank System</title>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
+            margin: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #0d0d0d;
+            color: #f2f2f2;
             display: flex;
             justify-content: center;
-            padding: 40px;
+            align-items: center;
+            height: 100vh;
         }
 
-        .container {
-            width: 900px;
-            background: #111;
-            border-radius: 12px;
+        .app {
+            width: 1000px;
+            background: #141414;
+            border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.6);
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
 
-        h2 {
+        h1 {
             text-align: center;
             margin-bottom: 30px;
-            color: #00e5ff;
+            letter-spacing: 1px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
         }
 
         .card {
             background: #1c1c1c;
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 10px;
         }
 
-        h3 {
+        .card h3 {
             margin-bottom: 15px;
-            color: #00ff9c;
+            font-weight: 500;
+            color: #cccccc;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 8px;
             border: none;
-            outline: none;
+            background: #2a2a2a;
+            color: white;
             font-size: 14px;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: #888;
         }
 
         button {
             width: 100%;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             border: none;
-            background: #00e5ff;
+            background: #e6e6e6;
             color: black;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
         }
 
         button:hover {
-            background: #00bcd4;
-            transform: scale(1.02);
+            background: #ffffff;
+            transform: translateY(-1px);
         }
 
-        .full {
-            grid-column: span 2;
+        .wide {
+            grid-column: span 3;
         }
 
-        #result {
+        .actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .message {
             margin-top: 25px;
-            background: black;
-            padding: 15px;
-            border-radius: 8px;
-            min-height: 60px;
-            white-space: pre-wrap;
-            font-family: monospace;
-            color: #00ff9c;
+            padding: 16px;
+            border-radius: 10px;
+            background: #1f1f1f;
+            text-align: center;
+            font-size: 15px;
+            color: #dddddd;
+            min-height: 22px;
+        }
+
+        .success {
+            color: #a8ffcf;
+        }
+
+        .error {
+            color: #ff9a9a;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🏦 Bank Management System</h2>
+<div class="app">
+    <h1>Bank Management System</h1>
 
     <div class="grid">
 
         <div class="card">
             <h3>Create Account</h3>
             <input id="c_acc" placeholder="Account Number">
-            <input id="c_name" placeholder="Name">
+            <input id="c_name" placeholder="Account Holder Name">
             <input id="c_bal" placeholder="Initial Balance">
-            <button onclick="createAccount()">Create Account</button>
+            <button onclick="createAccount()">Create</button>
         </div>
 
         <div class="card">
@@ -115,32 +142,30 @@
             <button onclick="withdraw()">Withdraw</button>
         </div>
 
-        <div class="card">
-            <h3>Check Balance</h3>
-            <input id="b_acc" placeholder="Account Number">
-            <button onclick="checkBalance()">Check Balance</button>
-        </div>
-
-        <div class="card full">
-            <h3>Accounts Overview</h3>
-            <button onclick="viewAllAccounts()">View All Accounts</button><br><br>
-            <button onclick="highestBalance()">Highest Balance Account</button>
+        <div class="card wide">
+            <h3>Account Actions</h3>
+            <div class="actions">
+                <input id="b_acc" placeholder="Account Number">
+                <button onclick="checkBalance()">Check Balance</button>
+                <button onclick="viewAllAccounts()">All Accounts</button>
+                <button onclick="highestBalance()">Highest Balance</button>
+            </div>
         </div>
 
     </div>
 
-    <div id="result">Result will appear here...</div>
+    <div id="message" class="message">Ready</div>
 </div>
 
 <script>
-function show(data) {
-    result.innerText = JSON.stringify(data, null, 2);
+function showMessage(text, type="success") {
+    const msg = document.getElementById("message");
+    msg.innerText = text;
+    msg.className = "message " + type;
 }
 
-function clearCreateInputs() {
-    c_acc.value = "";
-    c_name.value = "";
-    c_bal.value = "";
+function clearInputs(...ids) {
+    ids.forEach(id => document.getElementById(id).value = "");
 }
 
 function createAccount() {
@@ -155,8 +180,8 @@ function createAccount() {
     })
     .then(res => res.json())
     .then(data => {
-        show(data);
-        clearCreateInputs(); // 🔥 AUTO CLEAR
+        showMessage(data.message || "Account created");
+        clearInputs("c_acc","c_name","c_bal");
     });
 }
 
@@ -170,7 +195,10 @@ function deposit() {
         })
     })
     .then(res => res.json())
-    .then(show);
+    .then(data => {
+        showMessage(`New Balance: ₹${data.balance}`);
+        clearInputs("d_acc","d_amt");
+    });
 }
 
 function withdraw() {
@@ -183,26 +211,63 @@ function withdraw() {
         })
     })
     .then(res => res.json())
-    .then(show);
+    .then(data => {
+        if (data.message) {
+            showMessage(data.message, "error");
+        } else {
+            showMessage(`Remaining Balance: ₹${data.balance}`);
+        }
+        clearInputs("w_acc","w_amt");
+    });
 }
 
 function checkBalance() {
     fetch(`/balance/${b_acc.value}`)
     .then(res => res.json())
-    .then(show);
+    .then(data => {
+        showMessage(`${data.name} | Balance: ₹${data.balance}`);
+        clearInputs("b_acc");
+    });
 }
 
 function viewAllAccounts() {
     fetch("/accounts")
     .then(res => res.json())
-    .then(show);
+    .then(data => {
+        const accounts = Object.entries(data);
+
+        if (accounts.length === 0) {
+            showMessage("No accounts found", "error");
+            return;
+        }
+
+        let output = "";
+        accounts.forEach(([acc, info]) => {
+            output += `Account ${acc} | ${info.name} | ₹${info.balance}\n`;
+        });
+
+        const msg = document.getElementById("message");
+        msg.innerText = output;
+        msg.className = "message success";
+    });
 }
+
 
 function highestBalance() {
     fetch("/highest_balance")
     .then(res => res.json())
-    .then(show);
+    .then(data => {
+        const acc = Object.keys(data)[0];
+        showMessage(`Highest Balance → Acc ${acc} : ₹${data[acc].balance}`);
+    });
 }
+
+// ENTER KEY SUPPORT
+document.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+        document.activeElement.blur();
+    }
+});
 </script>
 
 </body>
