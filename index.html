@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bank Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .container {
+            width: 900px;
+            background: #111;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.6);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00e5ff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .card {
+            background: #1c1c1c;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            color: #00ff9c;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #00e5ff;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #00bcd4;
+            transform: scale(1.02);
+        }
+
+        .full {
+            grid-column: span 2;
+        }
+
+        #result {
+            margin-top: 25px;
+            background: black;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 60px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            color: #00ff9c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🏦 Bank Management System</h2>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Create Account</h3>
+            <input id="c_acc" placeholder="Account Number">
+            <input id="c_name" placeholder="Name">
+            <input id="c_bal" placeholder="Initial Balance">
+            <button onclick="createAccount()">Create Account</button>
+        </div>
+
+        <div class="card">
+            <h3>Deposit</h3>
+            <input id="d_acc" placeholder="Account Number">
+            <input id="d_amt" placeholder="Amount">
+            <button onclick="deposit()">Deposit</button>
+        </div>
+
+        <div class="card">
+            <h3>Withdraw</h3>
+            <input id="w_acc" placeholder="Account Number">
+            <input id="w_amt" placeholder="Amount">
+            <button onclick="withdraw()">Withdraw</button>
+        </div>
+
+        <div class="card">
+            <h3>Check Balance</h3>
+            <input id="b_acc" placeholder="Account Number">
+            <button onclick="checkBalance()">Check Balance</button>
+        </div>
+
+        <div class="card full">
+            <h3>Accounts Overview</h3>
+            <button onclick="viewAllAccounts()">View All Accounts</button><br><br>
+            <button onclick="highestBalance()">Highest Balance Account</button>
+        </div>
+
+    </div>
+
+    <div id="result">Result will appear here...</div>
+</div>
+
+<script>
+function show(data) {
+    result.innerText = JSON.stringify(data, null, 2);
+}
+
+function clearCreateInputs() {
+    c_acc.value = "";
+    c_name.value = "";
+    c_bal.value = "";
+}
+
+function createAccount() {
+    fetch("/create_account", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            account_number: Number(c_acc.value),
+            name: c_name.value,
+            balance: Number(c_bal.value)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        show(data);
+        clearCreateInputs(); // 🔥 AUTO CLEAR
+    });
+}
+
+function deposit() {
+    fetch("/deposit", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            account_number: Number(d_acc.value),
+            amount: Number(d_amt.value)
+        })
+    })
+    .then(res => res.json())
+    .then(show);
+}
+
+function withdraw() {
+    fetch("/withdraw", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            account_number: Number(w_acc.value),
+            amount: Number(w_amt.value)
+        })
+    })
+    .then(res => res.json())
+    .then(show);
+}
+
+function checkBalance() {
+    fetch(`/balance/${b_acc.value}`)
+    .then(res => res.json())
+    .then(show);
+}
+
+function viewAllAccounts() {
+    fetch("/accounts")
+    .then(res => res.json())
+    .then(show);
+}
+
+function highestBalance() {
+    fetch("/highest_balance")
+    .then(res => res.json())
+    .then(show);
+}
+</script>
+
+</body>
+</html>
