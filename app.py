@@ -6,11 +6,9 @@ accounts = {}
 
 @app.route("/")
 def home():
-    return "HOME ROUTE WORKING"
-
-@app.route("/ui")
-def ui():
     return render_template("index.html")
+
+
 
 @app.route("/create_account", methods=["POST"])
 def create_account():
@@ -58,8 +56,6 @@ def balance(acc):
 
     return jsonify(accounts[acc])
 
-# ---------------- NEW CODE FOR 5 & 6 ----------------
-
 @app.route("/accounts")
 def view_all_accounts():
     return jsonify(accounts)
@@ -71,8 +67,6 @@ def highest_balance_account():
 
     highest_acc = max(accounts, key=lambda x: accounts[x]["balance"])
     return jsonify({highest_acc: accounts[highest_acc]})
-
-# ---------------------------------------------------
 
 if __name__ == "__main__":
     app.run(debug=True)
